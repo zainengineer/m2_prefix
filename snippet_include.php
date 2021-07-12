@@ -64,7 +64,7 @@ Class AutoInclude
             !d("$path does not exist");
             !d("attempting  /?op=snippets");
 //            throw new Exception(($path) . ' does not exist');
-            $this>$this->programmaticSnippetPath = 'snippets';
+            $this->programmaticSnippetPath = 'snippets';
             $this->addPreSnippet();
         }
     }
