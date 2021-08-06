@@ -76,8 +76,7 @@ Class ZActionDetect
             $aReturn = call_user_func_array([$instance, $methodName], $aArguments);
         }
         catch (\Exception $e){
-            !d($e);
-            die;
+            $aReturn = $e;
         }
 
         $timeTaken = microtime(true) -$timeStart;
@@ -97,9 +96,13 @@ Class ZActionDetect
                 $outcome = ZActionDetect::callMethod($instanceName);
                 $functionCalled = key($outcome);
                 $valueReturned = current($outcome);
-                !d($valueReturned);
-                echo "Function Called: <span style='background: #e0eaef'>$functionCalled</span><br/>\n" ;
-                if (isset($outcome['time'])){
+                if (is_object($valueReturned) && ($valueReturned instanceof \Exception)) {
+                    d($valueReturned);
+                } else {
+                    !d($valueReturned);
+                }
+                echo "Function Called: <span style='background: #e0eaef'>$functionCalled</span><br/>\n";
+                if (isset($outcome['time'])) {
                     $timeTakenByMethod = $outcome['time'];
                     echo "Time Taken: <span style='background: #e0eaef'><b>$timeTakenByMethod</b></span><br/>\n";
                 }
