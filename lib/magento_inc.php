@@ -30,11 +30,16 @@ Class MagentoInc
      * @var \Magento\Framework\Indexer\IndexerRegistry
      */
     private $indexerRegistry;
+    /**
+     * @var \Magento\Framework\ObjectManager\ConfigLoaderInterface
+     */
+    private $configLoader;
 
     function __construct(\Magento\Framework\App\State $state,
                          \Magento\Store\Model\StoreManager $storeManager,
                          \Magento\Framework\Registry $registry,
                          \Magento\Catalog\Model\Indexer\Product\Flat\State $flatState,
+                         \Magento\Framework\ObjectManager\ConfigLoaderInterface $configLoader,
                          \Magento\Framework\Indexer\IndexerRegistry $indexerRegistry,
                          \Magento\Framework\ObjectManagerInterface $objectManager)
     {
@@ -44,6 +49,7 @@ Class MagentoInc
         $this->registry = $registry;
         $this->flatState = $flatState;
         $this->indexerRegistry = $indexerRegistry;
+        $this->configLoader = $configLoader;
     }
 
     public function setAdminHtml()
@@ -56,6 +62,11 @@ Class MagentoInc
         $this->registry->register('isSecureArea', true);
         $this->bStateSet = true;
     }
+    public function loadFrontendConfig()
+    {
+        $area = Area::AREA_FRONTEND;
+        $this->objectManager->configure($this->configLoader->load($area));
+    }
     //don't call it in boot time, call it just before
     public function setFrontEndStore(string $storeCode = 'default')
     {
@@ -67,8 +78,12 @@ Class MagentoInc
     }
     public function setState($area = Area::AREA_FRONTEND)
     {
+        if ($area == AREA::AREA_FRONTEND){
+            $this->loadFrontendConfig();;
+        }
         $this->state->setAreaCode($area);
     }
+
 
     public function setRestApiArea()
     {
