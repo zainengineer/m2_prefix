@@ -1,7 +1,7 @@
 <?php
 $initialClasses = get_declared_classes();
 /**
- * @var $magentoInc
+ * @var $magentoInc MagentoInc
  * @see \MagentoInc::setAdminHtml()
  */
 

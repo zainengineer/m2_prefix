@@ -73,6 +73,12 @@ Class MagentoInc
         if ($this->bStateSet) {
             return false;
         }
+        if ($storeCode == 'default') {
+            if (!empty($_ENV['z_frontend_code'])) {
+                $storeCode = $_ENV['z_frontend_code'];
+            }
+        }
+        $this->setState();
         $this->storeManager->setCurrentStore($storeCode);
         $this->bStateSet = true;
     }
