@@ -17,7 +17,6 @@ HTML;
     }
     exit(1);
 }
-
 class RequestNotFound
 {
     private function sendResourceNotFound()
@@ -59,13 +58,20 @@ class ZInc
     {
         $vKnitPath = __DIR__ . "/lib/kint_inc.php";
         require_once $vKnitPath;
-        \Kint::$max_depth = $depth;
+        \KintHelper::setMaxDepth($depth);
     }
 
     public static function InternalLog()
     {
         $vFunctionPath = __DIR__ . '/profile/InternalLog.php';
         require_once $vFunctionPath;
+    }
+
+    public static function getRootPath()
+    {
+        $root = dirname(__DIR__);
+        $folderName = basename($root);
+        return ($folderName == 'pub') ? dirname($root) : $root;
     }
 }
 
@@ -80,17 +86,39 @@ class ZNgrock
         if (strpos($_SERVER['HTTP_HOST'], '.ngrok.io')) {
             return;
         }
+        if (strpos($_SERVER['HTTP_HOST'], 'ngrok')) {
+            return;
+        }
+        $_SERVER['HTTP_ORIGINAL_Z_HOST'] = $_SERVER['HTTP_HOST'];
         $_SERVER['HTTP_HOST'] = $forwardedHost;
     }
-
+    static function getFlagPath(): string
+    {
+        return dirname(dirname(__DIR__)) . '/pre_ngrok_base_url.flag.json';
+    }
     public static function ngrockConfigChangeRequired()
     {
-        $flagPath = dirname(dirname(__DIR__)) . '/pre_ngrok_base_url.flag';
-        $flagExists = file_exists($flagPath);
+
         $httpHost = $_SERVER['HTTP_HOST'];
         $ngrokInDomain = strpos($httpHost, '.ngrok.io') ? true : false;
+        $ngrokInDomain = ($ngrokInDomain ||  strpos($httpHost, '.ngrok-free.app')) ? true : false;
+        $ngrokMessage = false;
+        if ($ngrokInDomain){
+            $ngrokMessage = true;
+            $flagPath = self::getFlagPath();
+            $flagExists = file_exists($flagPath);
+            if ($flagExists){
+                $ngrokMessage = false;
+                $conents = @json_decode(@file_get_contents($flagPath),true);
+                $disabled =$conents['disabled']?? false;
+                if ($disabled){
+                    $ngrokMessage = true;
+                }
+            }
+        }
         //only one is true
-        if (((int)$ngrokInDomain + (int)$flagExists) === 1) {
+        if ($ngrokMessage) {
+
             echo "from:zain_custom<br/>\n";
             echo "Does not look your flag position is correct fix it by clicking <a href='/?op=builtin/config/ngrok&action=switchIfNeeded'>switch if need</a>
 <br/>\n to only check click <a href='/?op=builtin/config/ngrok&action=getStoreBaseUrl'>getStoreBaseUrl</a>
@@ -111,7 +139,6 @@ if (empty($_GET['op'])) {
     ZNgrock::ngrockConfigChangeRequired();
     return;
 }
-
 
 require_once __DIR__ . '/lib/ZReflection.php';
 require_once __DIR__ . '/snippet_include.php';
