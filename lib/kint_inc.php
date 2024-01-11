@@ -2,7 +2,7 @@
 if (version_compare(phpversion(), '8', '>=')) {
     $rootPath = dirname(__DIR__, 3);
     //need to do it because having strange phar rapper errors
-    require_once $rootPath . "/vendor/autoload.php";
+//    require_once $rootPath . "/vendor/autoload.php";
     if (!class_exists('\Kint')) {
         require_once __DIR__ . '/kint.phar';
     }

@@ -157,6 +157,7 @@ HTML;
         $magentoInc = $this->getMagentoInc();
         $bExecuteNow = true;
         try{
+            stream_wrapper_restore('phar');
             require $path;
         }catch(\Exception $e){
             \zain_custom\lib\ErrorPrinting::showException($e);
