@@ -154,6 +154,13 @@ HTML;
 
     protected function includeMagentoSnippet($path)
     {
+        if (!isset($_GET['action'])){
+            $GLOBALS['no_magento_inc'] = 1;
+            $this->includeKnit();
+            require_once __DIR__ . "/lib/magento_inc.php";
+            require $path;
+            return ;
+        }
         $magentoInc = $this->getMagentoInc();
         $bExecuteNow = true;
         try{

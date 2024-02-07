@@ -140,18 +140,32 @@ Class MagentoInc
     }
 }
 
-;
+Class EmptyMagentoLikeStub
+{
+    public function __call(string $name, array $arguments)
+    {
 
-if (!isset($app)) {
-    echo "<pre>";
-    debug_print_backtrace();
-    echo "</pre>";
-    var_dump('not set app');
-    die;
+    }
+}
+
+if (isset($app)) {
+    $magentoInc = $app->getObjectManager()->create('\MagentoInc');
+    $GLOBALS['magentoInc'] = $magentoInc;
+}
+else{
+    if (($GLOBALS['no_magento_inc'])??0){
+        $magentoInc = new EmptyMagentoLikeStub();
+    }
+    else{
+        echo "<pre>";
+        debug_print_backtrace();
+        echo "</pre>";
+        var_dump('not set app');
+        die;
+    }
 }
 /** @var \MagentoInc $magentoInc */
-$magentoInc = $app->getObjectManager()->create('\MagentoInc');
-$GLOBALS['magentoInc'] = $magentoInc;
+
 function setStateAdminHtml()
 {
     global $magentoInc;

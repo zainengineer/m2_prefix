@@ -9,10 +9,10 @@ Class ShowExceptionAsNormalMessage extends \Exception
 
 Class ZActionDetect
 {
-    static function listMethods($instanceName)
+    static function listMethods(string $className)
     {
         $error = new \ShowExceptionAsNormalMessage();
-        $reflectionClass = new \ReflectionClass($instanceName);
+        $reflectionClass = new \ReflectionClass($className);
         $error->collapse = true;
         $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
         $methodList = array_map(function (\ReflectionMethod $method) {
@@ -28,31 +28,34 @@ Class ZActionDetect
             }
         }
 
-        $error->errorData["available Methods for $instanceName are"] = array_keys($methodList);
+        $error->errorData["available Methods for $className are"] = array_keys($methodList);
         $error->rawMessage = self::fillActionUrls($methodList,$reflectionClass->getFileName());
         throw $error;
     }
-    public static function callMethod($instance)
+    public static function callMethod(
+        string $className,
+        MagentoInc | EmptyMagentoLikeStub $magentoIncGiven,
+    )
     {
-        $baseUrl = $_SERVER['REQUEST_URI'];
         echo "<a href='/?op=snippets'>Snippets</a>\n<br/><br/>\n";
         $timeStart = microtime(true);
-        $instanceName = get_class($instance);
+
         if (!isset($_GET['action'])) {
-            self::listMethods($instanceName);
+            self::listMethods($className);
         }
+        $instance = $magentoIncGiven->getObjectFromName($className);
         $action = $_GET['action'] ?? 'main';
         $methodName = $action ?: 'main';
-        $actionLabel = "$instanceName->$methodName()";
-        $vMessage = "Unable to call  $actionLabel";
+        $actionLabel = "$className->$methodName()";
         if (!is_callable([$instance, $methodName])){
+            $vMessage = "Unable to call  $actionLabel";
             self::displayError($vMessage);
             echo "<br/><br/>";
             //auto throws error to get out of the loop
-            self::listMethods($instanceName);
+            self::listMethods($className);
         }
         echo self::indexLink() . "<br/><br/>\n";
-        $r = new \ReflectionMethod($instanceName, $methodName);
+        $r = new \ReflectionMethod($instance, $methodName);
         echo self::phpStormMethodLinks($r, $actionLabel) . "<br/>\n";
         $params = $r->getParameters();
         $aArguments = [];
@@ -86,14 +89,13 @@ Class ZActionDetect
         ];
         return $aReturn;
     }
-    public static function showOutput(string $className,\MagentoInc $magentoIncGiven)
+    public static function showOutput(string $className,\MagentoInc |EmptyMagentoLikeStub  $magentoIncGiven)
     {
         if (empty($GLOBALS['just_include_snippet_class'])) {
 
-            $instanceName = $magentoIncGiven->getObjectFromName($className);
 
             try {
-                $outcome = ZActionDetect::callMethod($instanceName);
+                $outcome = ZActionDetect::callMethod($className, $magentoIncGiven);
                 $functionCalled = key($outcome);
                 $valueReturned = current($outcome);
                 if (is_object($valueReturned) && ($valueReturned instanceof \Exception)) {
