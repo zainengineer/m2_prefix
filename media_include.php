@@ -54,11 +54,48 @@ class ZMediaInc
 {
     public static function getBaseRemoteUrl()
     {
-        $baseUrl = 'https://example.com/';
+        static $basicUrlContent;
+        if (!isset($basicUrlContent)){
+            $basicUrlContent = file_get_contents(__DIR__ .'/base_production_url.txt');
+            if (!$basicUrlContent){
+                xdebug_break();
+                throw new \Exception("not set basic Url Content");
+            }
+        }
+        $baseUrl = $basicUrlContent;
+//        $baseUrl = 'https://wwww.example.com.au/';
         $baseUrl = rtrim($baseUrl, '/');
         return $baseUrl;
     }
 
+    static function aria2C(string $strImage,
+                           string $originalImagePath)
+    {
+        static $existingList;
+        $filePath = __DIR__ . '/write/image_list.txt';
+        if (is_null($existingList)
+            && file_exists($filePath)) {
+            $content = file_get_contents($filePath);
+            $existingList = explode("\n", $content);
+            $existingList = array_filter($existingList);
+            $existingList = array_combine($existingList, $existingList);
+        }
+        if (!isset($existingList[$strImage])) {
+            $existingList[$strImage] = $strImage;
+            file_put_contents($filePath, $strImage . "\n", FILE_APPEND);
+            ///.../pub/zain_custom/write
+            $rootPath = dirname(__DIR__);
+            $baseUrl = self::getBaseRemoteUrl();
+//            $imageUrl = str_replace( $rootPath,$baseUrl,$strImage);
+            $imageUrl = "$baseUrl/$strImage";
+//            $out = "out=$rootPath/$strImage";
+            $relativePath = str_replace($rootPath, "pub", $originalImagePath);
+//            $out = "out=$relativePath";
+            $out = "out=pub/$strImage";
+            //pub/media/wysiwyg/some_image_pathD.jpg
+            file_put_contents(__DIR__ . '/write/url_list.txt', "$imageUrl\n  $out \n", FILE_APPEND);
+        }
+    }
     public static function guessPathAndDownloadStatic()
     {
         $url = $_SERVER['REQUEST_URI'];
