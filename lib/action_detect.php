@@ -144,14 +144,14 @@ Class ZActionDetect
         $lastLine = $method->getEndLine()-2;
         $fileName = $method->getFileName();
         $fileName = self::removeFilePrefix($fileName);
-        //<a class="kint-ide-link" href="http://localhost:8091/?message=/vagrant/pub/zain_custom/lib/action_detect.php:63">&lt;ROOT&gt;/zain_custom/lib/action_detect.php:63</a>
-        $end = $includeEnd ? "  ---- <a href='http://localhost:8091/?message=$fileName:$lastLine'>end</a>": '';
-        return "<a href='http://localhost:8091/?message=$fileName:$firstLine'>$label</a>$end";
+        //<a class="kint-ide-link" href="http://localhost:63342/api/file//vagrant/pub/zain_custom/lib/action_detect.php:63">&lt;ROOT&gt;/zain_custom/lib/action_detect.php:63</a>
+        $end = $includeEnd ? "  ---- <a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$fileName:$lastLine'>end</a>" : '';
+        return "<a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$fileName:$firstLine'>$label</a>$end";
     }
     public static function fileLink($fileName): string
     {
         $fileName = self::removeFilePrefix($fileName);
-        return "Navigate to: <a href='http://localhost:8091/?message=$fileName'>$fileName</a>";
+        return "Navigate to: <a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$fileName'>$fileName</a>";
     }
     protected static function removeFilePrefix(string $fileName):string
     {

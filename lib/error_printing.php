@@ -30,7 +30,7 @@ class ErrorPrinting {
     {
         $vDisplayPath = self::removeBasePath($vFullPath);
         $vActualPath = self::isVM()? $vDisplayPath : $vFullPath;
-        return "<a href='http://localhost:8091/?message=$vActualPath:$line'>$vDisplayPath:$line</a>";
+        return "<a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$vActualPath:$line'>$vDisplayPath:$line</a>";
     }
 
     public static function isVM()

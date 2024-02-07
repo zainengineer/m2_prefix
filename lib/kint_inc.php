@@ -33,7 +33,7 @@ class KintHelper
     }
 }
 
-\Kint::$file_link_format = 'http://localhost:8091/?message=%f:%l';
+\Kint::$file_link_format = 'http://localhost:63342/api/file/%f:%l';
 /**x
  *
  *
