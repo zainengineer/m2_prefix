@@ -66,6 +66,15 @@ class ZInc
         $vFunctionPath = __DIR__ . '/profile/InternalLog.php';
         require_once $vFunctionPath;
     }
+    public static function ensureXdebug()
+    {
+        $startTime = microtime(true);
+        xdebug_break();
+        if ((microtime(true)-$startTime) < 0.5){
+            !d('enable xdebug listening');
+            die;
+        }
+    }
 
     public static function getRootPath()
     {
@@ -141,5 +150,6 @@ if (empty($_GET['op'])) {
 }
 
 require_once __DIR__ . '/lib/ZReflection.php';
+require_once __DIR__ . '/lib/InternalLog.php';
 require_once __DIR__ . '/snippet_include.php';
 die;
