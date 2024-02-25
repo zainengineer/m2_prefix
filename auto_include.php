@@ -17,6 +17,10 @@ HTML;
     }
     exit(1);
 }
+
+define('ZINCLUDE_BASE_DIR',     __DIR__);
+require_once __DIR__ . "/MagePrefix/ZInclude/AutoLoad.php";
+spl_autoload_register(['\MagePrefix\ZInclude\AutoLoad','AutoLoadHandler'],prepend:true);
 class RequestNotFound
 {
     private function sendResourceNotFound()
@@ -146,6 +150,9 @@ class ZNgrock
 ZNgrock::replaceHostIfNeeded();
 if (empty($_GET['op'])) {
     ZNgrock::ngrockConfigChangeRequired();
+    if (!spl_autoload_unregister(['\MagePrefix\ZInclude\AutoLoad','AutoLoadHandler'])){
+        throw new \Exception('Could not unregister handler');
+    }
     return;
 }
 

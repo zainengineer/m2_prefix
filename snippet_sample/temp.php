@@ -17,7 +17,7 @@ Class baseUrl{
         return $this->scopeConfig->getValue('web/unsecure/base_url');
     }
 };
-/** @var \baseUrl $baseUrl */
+/** @var \zain_custom\mun_snippet\baseUrl $baseUrl */
 $baseUrl = $magentoInc->getObjectFromName('\baseUrl');
 d($baseUrl->showValue());
 

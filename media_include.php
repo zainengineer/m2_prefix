@@ -56,7 +56,7 @@ class ZMediaInc
     {
         static $basicUrlContent;
         if (!isset($basicUrlContent)){
-            $basicUrlContent = file_get_contents(__DIR__ .'/base_production_url.txt');
+            $basicUrlContent = trim(file_get_contents(__DIR__ .'/base_production_url.txt'));
             if (!$basicUrlContent){
                 xdebug_break();
                 throw new \Exception("not set basic Url Content");
@@ -127,6 +127,7 @@ class ZMediaInc
         $remoteBaseUrl = self::getBaseRemoteUrl();
         $urlPath = parse_url($url, PHP_URL_PATH);
         $remoteFullUrl = "{$remoteBaseUrl}$urlPath";
+        xdebug_break();
         $contents = file_get_contents($remoteFullUrl);
         $targetDir = dirname($targetPath);
         if (!is_dir($targetDir)) {

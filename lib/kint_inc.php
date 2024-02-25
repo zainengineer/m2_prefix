@@ -4,12 +4,12 @@ if (version_compare(phpversion(), '8', '>=')) {
     //need to do it because having strange phar rapper errors
 //    require_once $rootPath . "/vendor/autoload.php";
     if (!class_exists('\Kint')) {
-        require_once __DIR__ . '/kint.phar';
+        require_once __DIR__ . '/kint_lib/kint.phar';
     }
     \Kint::$depth_limit = 5;
 
 } else {
-    require_once __DIR__ . '/kint.php';
+    require_once __DIR__ . '/kint_lib/kint.php';
     \Kint::$max_depth = 5;
 }
 

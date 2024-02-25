@@ -1,8 +1,8 @@
 <?php
-xdebug_break();
 $debugIt = 1;
 echo date('c') . "\n<br/>";
 $xdebugMode = ini_get('xdebug.mode');;
+xdebug_break();
 d($xdebugMode);
 if ($xdebugMode!=='debug'){
     d("xdebug needs debug mode");
