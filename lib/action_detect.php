@@ -1,5 +1,4 @@
 <?php
-
 Class ShowExceptionAsNormalMessage extends \Exception
 {
     public $errorData = [];

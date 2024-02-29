@@ -2,15 +2,24 @@
 
 use Magento\Framework\App\Bootstrap;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use MagePrefix\ZInclude\Traits\SingletonTrait;
 
 Class AutoInclude
 {
+    use SingletonTrait;
     protected $programmaticSnippetPath;
+    public function __construct(
+        protected \MagePrefix\ZInclude\Links\ShowLinks $showLinks,
+    )
+    {
+    }
+
     protected function start()
     {
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
         require_once __DIR__ . "/lib/fatal_inc.php";
+        $this->includeKnit();
     }
 
     protected function getSnippetName()
@@ -46,7 +55,7 @@ Class AutoInclude
         $vCorePreSnippet = __DIR__ . "/snippets_core_pre/{$vSnippetName}.php";
         if (file_exists($vCorePreSnippet)) {
             $this->includeKnit();
-            require($vCorePreSnippet);
+            \MagePrefix\ZInclude\Snippets\Links::getSingleton()->showAllTypsOfSnippets();
             exit;
         }
     }
@@ -146,10 +155,18 @@ HTML;
     public function processSnippet()
     {
         $this->start();
+        $this->addSnippetsList();
         $this->addPreSnippet();
         $this->addBuiltInSnippet();
         $this->checkSnippet();
         $this->includeMagentoSnippet($this->getSnippetPath());
+    }
+    protected function addSnippetsList()
+    {
+        if ($this->getSnippetName() === 'snippets'){
+             $this->showLinks->showAllTypsOfSnippets();
+             d(1);die;
+        }
     }
 
     protected function includeMagentoSnippet($path)
@@ -167,13 +184,10 @@ HTML;
             stream_wrapper_restore('phar');
             require $path;
         }catch(\Exception $e){
+            xdebug_break();
             \zain_custom\lib\ErrorPrinting::showException($e);
             !d($e->getFile(). ':' . $e->getLine());
             throw $e;
         }
     }
 }
-
-$autoInclude = new AutoInclude();
-$autoInclude->processSnippet();
-die;

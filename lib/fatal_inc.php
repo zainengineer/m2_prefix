@@ -33,7 +33,8 @@ function fixXdebugLinks()
         (() => {
              let links = document.querySelectorAll("table.xdebug-error td a");
              let dumpLinks = document.querySelectorAll("pre.xdebug-var-dump a");
-             [...links,...dumpLinks].map((link)=>link.addEventListener('click', (e) => {
+             let exceptionLinks = document.querySelectorAll("table.xdebug-error tr th a");
+             [...links,...dumpLinks,...exceptionLinks].map((link)=>link.addEventListener('click', (e) => {
                  e.preventDefault();
                  console.log('fetching ',e.currentTarget.href );
                  fetch(e.currentTarget.href);

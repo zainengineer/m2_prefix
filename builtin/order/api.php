@@ -1,21 +1,14 @@
 <?php
-/**
- * To replace
- *
- * OrderApi
- *
- */
+$initialClasses = get_declared_classes();
+
 $magentoInc->setRestApiArea();
 
 Class OrderApi
 {
-
-    /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    private $orderRepository;
-
-    function __construct(\Magento\Sales\Api\OrderRepositoryInterface $orderRepository)
+    function __construct(
+        protected \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        protected \MagePrefix\ZInclude\OtherSnippets\ZOrderView $zOrderView,
+    )
     {
 
         $this->orderRepository = $orderRepository;
@@ -24,21 +17,11 @@ Class OrderApi
     public function showOrder(int $orderId)
     {
         $order = $this->orderRepository->get($orderId);
-        $orderView = \ZOrderView::getOrder($order);
+        $orderView = $this->zOrderView->getOrder($order);
         return $orderView;
     }
 }
 
 ;
 /** @var \OrderApi $instanceName */
-$instanceName = $magentoInc->getObjectFromName('\OrderApi');
-
-try {
-    !d(ZActionDetect::callMethod($instanceName));
-} catch (\ShowExceptionAsNormalMessage $e) {
-    $message = $e->errorData?:$e->getMessage();
-    if ($e->rawMessage){
-        echo $e->rawMessage;
-    }
-    !d($message);
-}
+\ZActionDetect::showOutput(end($initialClasses), $magentoInc);

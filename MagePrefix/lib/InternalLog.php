@@ -1,9 +1,13 @@
 <?php
 
+namespace MagePrefix\lib;
+
+namespace MagePrefix\lib;
+use MagePrefix\ZInclude\PrefixUtil\ZInc;
+$_ENV['internal_log'] =1;
 /**
  * InternalLog
  *
- * @author Zain <zain@mrphp.com.au>
  */
 class InternalLog
 {
@@ -28,7 +32,7 @@ class InternalLog
     /**
      * @var string
      */
-    static $newline = "\r\n";
+    static $newline = "\n";
     /**
      * @var bool
      */
@@ -73,8 +77,9 @@ class InternalLog
         if (self::$init == 1) {
             return;
         }
-        self::$file_path = Yii::app()->getRuntimePath() . '/internal_log/log.txt';
-        self::$lock_file_path = Yii::app()->getRuntimePath() . '/internal_log/lock';
+        $rootPath  = ZInc::getRootPath();
+        self::$file_path =  $rootPath . '/var/log/internal_log/log.txt';
+        self::$lock_file_path = $rootPath .  '/var/log/internal_log/lock';
         self::CreateLogFolder($fileName = self::$file_path);
         if (self::$clearLog) {
             self::clearLog();
@@ -87,18 +92,18 @@ class InternalLog
         self::$debugLine += 2;
         if (isset($_SERVER["REQUEST_URI"])) {
             $requestLine = 'REQUEST_URI -> ' . $_SERVER["REQUEST_URI"];
-            $msg = $msg . "\r\n" . $requestLine;
+            $msg = $msg . "\n" . $requestLine;
         }
         if (isset($_POST)) {
             if (!empty($_POST)) {
                 $post = print_r($_POST, true);
-                $msg = $msg . "\r\n" . ' POST ' . $post;
+                $msg =   "$msg\nPOST $post";
             }
         }
         if (isset($_GET)) {
             if (!empty($_GET)) {
                 $get = print_r($_GET, true);
-                $msg = $msg . "\r\n" . ' GET ' . $get;
+                $msg =   "$msg \nGET $get" ;
             }
         }
         self::log($msg);
@@ -117,9 +122,6 @@ class InternalLog
             return false;
         if (!$logCondition)
             return false;
-        if (!YII_DEBUG) {
-            return false;
-        }
         $newline = self::$newline;
         self::firstLine();
         if (file_exists(self::$file_path)) {
@@ -132,7 +134,8 @@ class InternalLog
                     // echo "<br/> debugline [" . self::$debugLine ."] <br/>";
                     // printr($bt);
                     // die;
-                    $file = str_replace(bp(), '', $bt[self::$debugLine]['file']);
+//                    $file = str_replace(bp(), '', $bt[self::$debugLine]['file']);
+                    $file =  $bt[self::$debugLine]['file'];
                     $codeLine = '  [' . $file . '] on line ' . $bt[self::$debugLine]['line'];
                 }
                 // $line=date('l jS m y h:i:s A');
@@ -141,9 +144,11 @@ class InternalLog
                 $execTime = round($execTime, 3);
                 $lapseTime = $currentMicroTime - self::$startMicroTime;
                 $lapseTime = round($lapseTime, 3);
+                $execFormat = number_format($execTime,3);
+                $lapseFormat = number_format($lapseTime,3);
                 if ($execTime > self::$minExecTime) {
-                    $line = date('h:i:s A') . ' ' . $execTime . '/' . $lapseTime . ' ' . $codeLine . $newline . $message;
-                    $newContents = $oldContents . $line . $newline . $newline . $newline;
+                    $line = date('h:i:s A') . ' ' . $execFormat . '/' . $lapseFormat . ' ' . $codeLine . $newline . $message;
+                    $newContents = $oldContents . $line . $newline . $newline ;
                     file_put_contents(self::$file_path, $newContents);
                 }
                 self::unLock();
@@ -225,7 +230,7 @@ class InternalLog
     {
         $dirName = dirname($fileName);
         if (!file_exists($dirName))
-            Helper::createDirectory($dirName, 0777, true);
+            mkdir($dirName, 0777, true);
         if (!file_exists($fileName)) {
             file_put_contents($fileName, "");
         }
@@ -324,3 +329,5 @@ class InternalLog
         }
     }
 }
+
+

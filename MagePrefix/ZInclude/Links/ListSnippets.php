@@ -1,6 +1,6 @@
 <?php
 
-namespace MagePrefix\ZInclude\Snippets;
+namespace MagePrefix\ZInclude\Links;
 use MagePrefix\ZInclude\Traits\SingletonTrait;
 use RecursiveDirectoryIterator;
 use RecursiveTreeIterator;
@@ -9,12 +9,29 @@ class ListSnippets
 {
     use SingletonTrait;
 
+    public function __construct()
+    {
+    }
+
     function getAll($snippetsPath, $prefix = '')
     {
         $aPhpPath = $this->phpPaths($snippetsPath, $prefix);
-        $aLinks = pathsToLink($aPhpPath);
-        $vLinks = linkToString($aLinks);
+        $aLinks = $this->pathsToLink($aPhpPath);
+        $vLinks = $this->linkToString($aLinks);
         return $vLinks;
+    }
+    function linkToString($aLinks)
+    {
+        return implode("\n<br/>",$aLinks);
+    }
+    function pathsToLink($aPhpPath)
+    {
+        $aLinks = [];
+        foreach ($aPhpPath as $fileName => $opName) {
+            $url = "<a href='/?op=$opName'>$opName</a>";
+            $aLinks[] = $url;
+        }
+        return $aLinks;
     }
 
     protected function canExcludeFile($fileName) : bool
