@@ -100,6 +100,7 @@ Class ZActionDetect
                 $valueReturned = current($outcome);
                 if (is_object($valueReturned) && ($valueReturned instanceof \Exception)) {
                     d($valueReturned);
+//                    echo ""
                 } else {
                     !d($valueReturned);
                 }
@@ -147,13 +148,18 @@ Class ZActionDetect
         $fileName = $method->getFileName();
         $fileName = self::removeFilePrefix($fileName);
         //<a class="kint-ide-link" href="http://localhost:63342/api/file//vagrant/pub/zain_custom/lib/action_detect.php:63">&lt;ROOT&gt;/zain_custom/lib/action_detect.php:63</a>
-        $end = $includeEnd ? "  ---- <a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$fileName:$lastLine'>end</a>" : '';
-        return "<a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$fileName:$firstLine'>$label</a>$end";
+        $end = $includeEnd ? "  ---- " . self::getPhpStormLink($fileName,$lastLine,'end') : '';
+        return self::getPhpStormLink($fileName,$firstLine,$label) .  "$end";
+    }
+    public static function getPhpStormLink(string $file, string $line, string $label)
+    {
+        $line = $line?":$line":'';
+        return "<a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$file{$line}'>$label</a>";
     }
     public static function fileLink($fileName): string
     {
         $fileName = self::removeFilePrefix($fileName);
-        return "Navigate to: <a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$fileName'>$fileName</a>";
+        return "Navigate to: " . self::getPhpStormLink($fileName,'',$fileName);
     }
     protected static function removeFilePrefix(string $fileName):string
     {
@@ -172,6 +178,7 @@ Class ZActionDetect
     public static function fillActionUrls(array $actions,$fileName)
     {
         $baseUrl = $_SERVER['REQUEST_URI'];
+        xdebug_break();
         $actionLinks = array_map(function (string $functionName,$method) use ($baseUrl) {
             $methodLink = self::phpStormMethodLinks($method,'goto',false);
             return "<a href='$baseUrl&action=$functionName'>$functionName</a>  <small>$methodLink</small>" ;

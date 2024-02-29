@@ -30,7 +30,7 @@ class ErrorPrinting {
     {
         $vDisplayPath = self::removeBasePath($vFullPath);
         $vActualPath = self::isVM()? $vDisplayPath : $vFullPath;
-        return "<a onClick='fetch(arguments[0].target.href); return false;'  href='http://localhost:63342/api/file/$vActualPath:$line'>$vDisplayPath:$line</a>";
+        return \ZActionDetect::getPhpStormLink($vActualPath,$line,$vDisplayPath);
     }
 
     public static function isVM()

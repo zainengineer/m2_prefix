@@ -34,6 +34,7 @@ class KintHelper
 }
 
 \Kint::$file_link_format = 'http://localhost:63342/api/file/%f:%l';
+
 /**x
  *
  *

@@ -23,7 +23,28 @@ function __fatalHandler()
         }
         var_dump($error);
         showTrace();
+        fixXdebugLinks();
     }
+}
+function fixXdebugLinks()
+{
+    ?>
+    <script>
+        (() => {
+             let links = document.querySelectorAll("table.xdebug-error td a");
+             let dumpLinks = document.querySelectorAll("pre.xdebug-var-dump a");
+             [...links,...dumpLinks].map((link)=>link.addEventListener('click', (e) => {
+                 e.preventDefault();
+                 console.log('fetching ',e.currentTarget.href );
+                 fetch(e.currentTarget.href);
+                 return false;
+             } ));
+        })();
+
+
+    </script>
+<?php
+
 }
 function showTrace()
 {
