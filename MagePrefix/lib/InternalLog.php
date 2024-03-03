@@ -67,6 +67,8 @@ class InternalLog
     static $loggedTimes = array();
 
     static $internalGlobals = array();
+    static $aggregateTimeTotals = [];
+    static $aggregateTimeTransition = [];
 
     /**
      * @static
@@ -236,6 +238,46 @@ class InternalLog
         }
     }
 
+    public static function startAggregateLog(string $aggregateKey)
+    {
+        self::$aggregateTimeTransition[$aggregateKey] = microtime(true);
+    }
+
+    public static function stopAggregateLog(string $aggregateKey) :void
+    {
+        if (!isset(self::$aggregateTimeTransition[$aggregateKey])) {
+            throw new \Exception("InternalLog: Aggregate key missing $aggregateKey");
+        }
+        $microTime = microtime(true) - self::$aggregateTimeTransition[$aggregateKey];
+        self::$aggregateTimeTotals[$aggregateKey] = (self::$aggregateTimeTotals[$aggregateKey] ?? 0) + $microTime;
+        static $registeredOnce = false;
+        //for extra optimisation so don't need to create stack for new function call
+        if (!$registeredOnce){
+            $registeredOnce = true;
+            self::registerShutDownOnce();
+        }
+
+    }
+    public static function registerShutDownOnce()
+    {
+        static $registered = false;
+        if (!$registered){
+            register_shutdown_function(function(){
+                self::logAllAggregate();
+            });
+            $registered = true;
+        }
+    }
+    public static function logAllAggregate()
+    {
+        array_walk(self::$aggregateTimeTotals,fn(float $time, string $aggregateKey)=>
+            self::log("InternalLog logAllAggregate: aggregate time [$aggregateKey]  -> $time")
+        );
+    }
+    public static function logAggregateLog(string $aggregateKey)
+    {
+        self::log("InternalLog: aggregate time $aggregateKey " . self::$aggregateTimeTotals[$aggregateKey]);
+    }
     /**
      * @static
      *
