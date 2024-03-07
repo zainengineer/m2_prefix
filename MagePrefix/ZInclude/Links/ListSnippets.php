@@ -1,6 +1,7 @@
 <?php
 
 namespace MagePrefix\ZInclude\Links;
+
 use MagePrefix\ZInclude\Traits\SingletonTrait;
 use RecursiveDirectoryIterator;
 use RecursiveTreeIterator;
@@ -20,10 +21,12 @@ class ListSnippets
         $vLinks = $this->linkToString($aLinks);
         return $vLinks;
     }
+
     function linkToString($aLinks)
     {
-        return implode("\n<br/>",$aLinks);
+        return implode("\n<br/>", $aLinks);
     }
+
     function pathsToLink($aPhpPath)
     {
         $aLinks = [];
@@ -34,11 +37,14 @@ class ListSnippets
         return $aLinks;
     }
 
-    protected function canExcludeFile($fileName) : bool
+    protected function canExcludeFile($fileName): bool
     {
-        return (strpos($fileName,'SnippetModels')===0);
+        return (str_contains($fileName,'SnippetModels')
+        || str_contains($fileName,'util_scripts')
+        ) ;
     }
-    protected function phpPaths($snippetsPath,$prefix='')
+
+    protected function phpPaths($snippetsPath, $prefix = '')
     {
         $it = new RecursiveTreeIterator(new RecursiveDirectoryIterator($snippetsPath,
             RecursiveDirectoryIterator::SKIP_DOTS + RecursiveDirectoryIterator::UNIX_PATHS));
@@ -48,15 +54,15 @@ class ListSnippets
             $fileName = $split[1];
             $extension = substr($fileName, -4);
             if ($extension == '.php') {
-                $firstFileNameChars = substr(basename($fileName),0,2);
-                if ($firstFileNameChars=='__'){
+                $firstFileNameChars = substr(basename($fileName), 0, 2);
+                if ($firstFileNameChars == '__') {
                     continue;
                 }
                 //custom exclude
-                if ($this->canExcludeFile($fileName)){
+                if ($this->canExcludeFile($fileName)) {
                     continue;
                 }
-                $aPhpPath[$fileName] = $prefix . ltrim(pathinfo($fileName, PATHINFO_DIRNAME) . '/' . pathinfo($fileName, PATHINFO_FILENAME),'./');
+                $aPhpPath[$fileName] = $prefix . ltrim(pathinfo($fileName, PATHINFO_DIRNAME) . '/' . pathinfo($fileName, PATHINFO_FILENAME), './');
             }
         }
         return $aPhpPath;

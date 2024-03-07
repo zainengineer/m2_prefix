@@ -6,7 +6,7 @@ class ZInc
 {
     public static function dInc($depth = 4)
     {
-        $vKnitPath = __DIR__ . "/lib/kint_inc.php";
+        $vKnitPath = ZINCLUDE_BASE_DIR . "/lib/kint_inc.php";
         require_once $vKnitPath;
         \KintHelper::setMaxDepth($depth);
     }
