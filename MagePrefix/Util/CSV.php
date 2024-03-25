@@ -6,14 +6,18 @@ class CSV
 {
     public function getMappedCsvLines(
         string $path,
-        array $replaceHeader = []): array
+        array $replaceHeader = []
+    ): array
     {
         static $cache = [];
         if (!isset($cache[$path])) {
             ini_set('memory_limit', '2G');
             $csvLines = file($path);
             if ($csvLines) {
-                $header = str_getcsv($csvLines[0]);
+                $headerLine = $csvLines[0];
+                //remove UniCode character which sometimes get at the start of the document
+                $headerLine = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $headerLine);
+                $header = str_getcsv($headerLine);
                 if ($replaceHeader){
                     $header = $replaceHeader;
                 }
