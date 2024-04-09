@@ -6,7 +6,8 @@ class CSV
 {
     public function getMappedCsvLines(
         string $path,
-        array $replaceHeader = []
+        array $replaceHeader = [],
+        bool $cache =true
     ): array
     {
         static $cache = [];
@@ -31,7 +32,12 @@ class CSV
             }
 
         }
-        return $cache[$path];
+        if ($cache){
+            return $cache[$path];
+        }
+        $output = $cache[$path];
+        unset($cache[$path]);
+        return $output;
     }
     public function writeCsv(
         array  $lines,

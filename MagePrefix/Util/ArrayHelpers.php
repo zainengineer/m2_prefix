@@ -10,17 +10,20 @@ class ArrayHelpers
         bool   $useUnique
     )
     {
-        $columnValues = array_column($lookup,$columnName);
+        $columnValues = array_column($lookup, $columnName);
         $columnValues = $useUnique ? array_unique($columnValues) : $columnValues;
-        return array_combine($columnValues,$columnValues);
+        return array_combine($columnValues, $columnValues);
     }
+
     public function getFilteredLines(
         array  $linesToFilter,
         array  $listToCheckAgainst,
         string $columnToUseForFilter,
-        bool   $showMissing
+        bool   $showMissing,
+        bool   $checkingAgainstAssociativeArray = true,
     ): array
     {
+        $listToCheckAgainst = $checkingAgainstAssociativeArray ? $listToCheckAgainst : array_combine($listToCheckAgainst, $listToCheckAgainst);
         return array_filter($linesToFilter, function ($singleLine, $index)
         use ($listToCheckAgainst, $showMissing, $columnToUseForFilter) {
             if ($index === 0) {
@@ -37,9 +40,17 @@ class ArrayHelpers
             return $showMissing ? !isset($listToCheckAgainst[$indexValue]) : isset($listToCheckAgainst[$indexValue]);
         }, ARRAY_FILTER_USE_BOTH);
     }
-    public function getArrayPreview(array $lines) : array
+
+    public function getArrayPreview(array $lines,
+                                    bool  $die = false,
+    ): array
     {
         !d(count($lines));
-        return array_slice($lines, 0, 20);
+        $return = array_slice($lines, 0, 20);
+        if ($die) {
+            !d($return);
+            die;
+        }
+        return $return;
     }
 }
